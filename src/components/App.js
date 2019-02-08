@@ -10,9 +10,31 @@ class App extends React.Component {
     this.state = {
       pets: [],
       filters: {
-        type: 'all'
-      }
+        type: 'all',
+      },
     }
+  }
+
+  handleChangeFilterType = event => {
+    this.setState({
+      filters: {
+        ...this.state.filters,
+        type: event,
+      },
+    })
+  }
+
+  // reminder: arrow functions will implicitly bind `this` inside of them!!
+  findPets = () => {
+    let petUrl = '/api/pets'
+
+    if (this.state.filters.type !== 'all') {
+      petUrl = petUrl + `?type=${this.state.filters.type}`
+    }
+
+    fetch(petUrl)
+    .then(resp => resp.json())
+    .then(petList => console.log(petList))
   }
 
   render() {
@@ -24,7 +46,11 @@ class App extends React.Component {
         <div className="ui container">
           <div className="ui grid">
             <div className="four wide column">
-              <Filters />
+              <Filters
+                filters={this.state.filters}
+                onChangeType={this.handleChangeFilterType}
+                onFindPetsClick={this.findPets}
+              />
             </div>
             <div className="twelve wide column">
               <PetBrowser />
